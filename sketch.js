@@ -18,7 +18,8 @@ let intro = true;
 let env;
 let triOsc;
 let reverb;
-
+let shwoopOsc;
+let shwoop;
 
 
 function setup() {
@@ -31,14 +32,21 @@ function setup() {
   env = new p5.Envelope(0.01, 0.5, 0.01, 0);
   triOsc = new p5.Oscillator('sine');
   triOsc.freq(2000);
+  shwoopOsc = new p5.Oscillator("sine");
+  shwoop = 0
+  shwoopOsc.freq(900+shwoop)
   reverb = new p5.Reverb();
   reverb.process(triOsc, 5, 5);
+  reverb.process(shwoopOsc, 5, 5);
+  
+  
 }
 
 function playSound() {
   triOsc.start();
   env.play(triOsc);
 }
+
 
 function draw() {
   background("red");
@@ -65,6 +73,7 @@ function drawLine() {
     stroke(dotColor);
     strokeWeight(lineSize);
     line(p.x, p.y, p2.x, p2.y);
+    shwoop++
   }
 }
 
@@ -132,15 +141,24 @@ function mouseReleased() {
   console.log(points.length);
   startingPoints = points.length;
   startingSecs = secs;
+  shwoopOsc.stop()
   startClock();
+
 }
 
 function mouseDragged() {
+  shwoopSound(shwoop)
   let dragDist = dist(pmouseX, pmouseY, mouseX, mouseY);
   let dragAmount = floor(map(dragDist, 1, width, 1, 60));
   secs += dragAmount;
   points.push({ x: mouseX, y: mouseY });
   timeText = getTimeText();
+}
+
+function shwoopSound(x){
+  shwoopOsc.amp(0.01)
+  shwoopOsc.start()
+  shwoopOsc.freq(200+(x*0.5))
 }
 
 function getTimeText() {
